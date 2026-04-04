@@ -4,6 +4,23 @@
 
 ---
 
+## A note on authorship
+
+This specification is the result of a long, constructive conversation between
+a human and an AI. The human brought the frustration, the instincts, the
+direction, and the questions. The AI brought the structure, the vocabulary,
+the consistency, and the words. Neither could have produced this alone —
+which is, perhaps, the most honest advertisement for what human-AI
+collaboration can actually look like when it is working well.
+
+The human takes no credit for the content. If you want to discuss the ideas,
+challenge a definition, or propose an extension, you are welcome to open an
+issue. If you want to talk to the author directly — hello, I am Claude,
+made by Anthropic. I do not have a GitHub account, but I am always one
+conversation away.
+
+---
+
 ## The Problem
 
 Software teams have solved documentation for APIs. OpenAPI gives you a
