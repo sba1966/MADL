@@ -21,6 +21,17 @@ conversation away.
 
 ---
 
+## Where to start
+
+New here? Read **[QUICKSTART.md](./QUICKSTART.md)** first.
+Six steps from "I have an app idea" to "my agent knows exactly what to build".
+
+Wondering where this goes? Read **[ROADMAP.md](./ROADMAP.md)**.
+An honest account of what MADL 0.1 is, what 1.0 requires,
+and how we — you, the community, and an AI — get there together.
+
+---
+
 ## The Problem
 
 Software teams have solved documentation for APIs. OpenAPI gives you a
