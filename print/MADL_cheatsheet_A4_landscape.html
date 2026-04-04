@@ -1,0 +1,152 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-mono);font-size:11px}
+.page{width:100%;aspect-ratio:1.414/1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:0;border:1.5px solid #222;position:relative;background:#fff}
+.basket{padding:10px 12px;border:0.5px solid #ccc;display:flex;flex-direction:column;gap:4px;overflow:hidden}
+.tl{border-right:1px solid #bbb;border-bottom:1px solid #bbb}
+.tr{border-bottom:1px solid #bbb}
+.bl{border-right:1px solid #bbb}
+.br{}
+.bname{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:3px;padding-bottom:3px;border-bottom:0.5px solid #ddd}
+.bname span{color:#111}
+table{border-collapse:collapse;width:100%}
+td{padding:1.5px 4px;font-size:9.5px;vertical-align:top;line-height:1.35}
+td:first-child{font-family:var(--font-mono);color:#185FA5;white-space:nowrap;width:38%}
+td:last-child{color:#333;width:62%}
+tr:hover td{background:#f5f5f5}
+.section-gap{height:5px}
+.sub{font-size:8.5px;color:#888;font-style:italic}
+.closed{font-size:8px;color:#555;line-height:1.5;margin-top:2px}
+.pill{display:inline-block;background:#eee;border-radius:2px;padding:0 3px;margin:1px;font-size:8px;color:#333;font-family:var(--font-mono)}
+
+.centre{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:210px;height:210px;border-radius:50%;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:10;gap:3px}
+.centre-title{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;margin-bottom:4px;text-align:center;border-bottom:0.5px solid #555;padding-bottom:4px;width:100%;text-align:center}
+.centre table td:first-child{color:#7EC8E3;font-size:8.5px}
+.centre table td:last-child{color:#ccc;font-size:8px}
+.centre .id-row{font-size:7.5px;color:#aaa;font-family:var(--font-mono);text-align:center;margin-top:3px;line-height:1.6}
+.centre .id-hi{color:#7EC8E3}
+
+.madl-title{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;letter-spacing:.2em;color:#111;z-index:11;text-transform:uppercase;white-space:nowrap}
+.version{position:absolute;bottom:5px;right:10px;font-size:7.5px;color:#aaa;z-index:11}
+.rule-box{font-size:8px;color:#555;background:#f9f9f9;border:0.5px solid #ddd;border-radius:2px;padding:3px 5px;margin-top:3px;line-height:1.5}
+</style>
+
+<div class="page">
+  <div class="madl-title">MADL — Mobile Application Description Language &nbsp;·&nbsp; v0.1</div>
+
+  <div class="basket tl">
+    <div class="bname">TOP-LEFT &nbsp;·&nbsp; <span>NAVIGATION</span> &nbsp;— how the user moves</div>
+    <table>
+      <tr><td>atlas</td><td>Complete map of all decks, cards, transitions. One per app.</td></tr>
+      <tr><td>stack</td><td>Navigator: decks pushed onto history. Back = pop.</td></tr>
+      <tr><td>tabset</td><td>Navigator: N decks as parallel persistent destinations.</td></tr>
+      <tr><td>drawer</td><td>Navigator: hidden off-screen, revealed by gesture.</td></tr>
+      <tr><td>flow</td><td>Named linear deck sequence. Declared entry + exit.</td></tr>
+      <tr><td>entry</td><td>Default card shown when deck first opens. <span class="sub">WML &lt;go&gt;</span></td></tr>
+      <tr><td>exit</td><td>Target reached on back / cancel / complete. <span class="sub">WML &lt;prev&gt;</span></td></tr>
+    </table>
+    <div class="section-gap"></div>
+    <div class="closed"><b>IDs:</b>
+      <span class="pill">{app}.atlas</span>
+      <span class="pill">{app}.nav.stk{n}</span>
+      <span class="pill">{app}.nav.tab{n}</span>
+      <span class="pill">{app}.nav.drw{n}</span>
+      <span class="pill">{app}.flow.{name}</span>
+    </div>
+    <div class="rule-box">Atlas format: &nbsp;{deck}: entry:{card} &nbsp;exit:{deck|card} &nbsp;nav:{nav}</div>
+  </div>
+
+  <div class="basket tr">
+    <div class="bname">TOP-RIGHT &nbsp;·&nbsp; <span>INTERACTION</span> &nbsp;— what the user does</div>
+    <table>
+      <tr><td>trigger</td><td>Gesture or system event that initiates an action. <span class="sub">WML &lt;do&gt;</span></td></tr>
+      <tr><td>action</td><td>Named operation bound to a trigger. <span class="sub">WML &lt;do&gt; type</span></td></tr>
+      <tr><td>transition</td><td>Movement from card/deck to card/deck caused by action.</td></tr>
+      <tr><td>guard</td><td>Condition that must be true for transition to execute.</td></tr>
+    </table>
+    <div class="section-gap"></div>
+    <div class="closed"><b>Gestures (closed):</b>
+      <span class="pill">tap</span><span class="pill">long-press</span><span class="pill">swipe-left</span><span class="pill">swipe-right</span><span class="pill">swipe-up</span><span class="pill">swipe-down</span><span class="pill">pinch</span><span class="pill">expand</span><span class="pill">scroll-end</span><span class="pill">back</span><span class="pill">system-event</span>
+    </div>
+    <div class="section-gap"></div>
+    <div class="closed"><b>Transitions (closed):</b>
+      <span class="pill">push</span><span class="pill">pop</span><span class="pill">replace</span><span class="pill">modal-present</span><span class="pill">modal-dismiss</span><span class="pill">sheet-up</span><span class="pill">sheet-down</span><span class="pill">fade</span><span class="pill">none</span>
+    </div>
+    <div class="section-gap"></div>
+    <div class="closed"><b>IDs:</b>
+      <span class="pill">{card}.t{n}</span>
+      <span class="pill">{card}.t{n}.a</span>
+    </div>
+    <div class="rule-box">Action format: &nbsp;target:{card|deck} &nbsp;guard:{condition} &nbsp;animation:{type}</div>
+  </div>
+
+  <div class="basket bl">
+    <div class="bname">BOTTOM-LEFT &nbsp;·&nbsp; <span>ELEMENTS</span> &nbsp;— what populates cards</div>
+    <table>
+      <tr><td>element</td><td>Any discrete UI component placed in a slot. <span class="sub">WML generic</span></td></tr>
+      <tr><td>field</td><td>Element accepting user input. <span class="sub">WML &lt;input&gt;</span></td></tr>
+      <tr><td>label</td><td>Element displaying static or bound text. <span class="sub">WML &lt;p&gt;</span></td></tr>
+      <tr><td>control</td><td>Element that triggers an action (button, toggle, selector).</td></tr>
+      <tr><td>media</td><td>Element displaying image, video, or audio.</td></tr>
+      <tr><td>list</td><td>Repeating element rendering a bound collection.</td></tr>
+      <tr><td>overlay</td><td>Element rendered above the card surface.</td></tr>
+    </table>
+    <div class="section-gap"></div>
+    <div class="closed"><b>Overlay sub-types (closed):</b>
+      <span class="pill">dialog</span><span class="pill">sheet</span><span class="pill">toast</span><span class="pill">tooltip</span><span class="pill">action-sheet</span>
+    </div>
+    <div class="section-gap"></div>
+    <div class="closed"><b>IDs:</b>
+      <span class="pill">{slot}.e{n}</span>
+      <span class="pill">{card}.o{n}</span>
+    </div>
+    <div class="rule-box">Props: &nbsp;type* &nbsp;label &nbsp;bound-to &nbsp;visible-if &nbsp;modal:true|false &nbsp;auto-dismiss</div>
+  </div>
+
+  <div class="basket br">
+    <div class="bname">BOTTOM-RIGHT &nbsp;·&nbsp; <span>SERVICES</span> &nbsp;— what the app talks to</div>
+    <table>
+      <tr><td>service</td><td>Any external system the app communicates with.</td></tr>
+      <tr><td>store</td><td>Local persistent data (on-device db, keychain, prefs).</td></tr>
+      <tr><td>endpoint</td><td>Named operation exposed by a service.</td></tr>
+      <tr><td>binding</td><td>Link between element and store or endpoint.</td></tr>
+      <tr><td>host</td><td>Device OS capabilities (camera, GPS, biometrics…).</td></tr>
+      <tr><td>cloud</td><td>Remote platform service (auth, storage, push…).</td></tr>
+      <tr><td>event</td><td>Async message from service that may trigger card change.</td></tr>
+    </table>
+    <div class="section-gap"></div>
+    <div class="closed"><b>Host capabilities (closed):</b>
+      <span class="pill">camera</span><span class="pill">gps</span><span class="pill">biometrics</span><span class="pill">notifications</span><span class="pill">contacts</span><span class="pill">microphone</span><span class="pill">nfc</span><span class="pill">bluetooth</span>
+    </div>
+    <div class="section-gap"></div>
+    <div class="closed"><b>IDs:</b>
+      <span class="pill">{app}.svc.{name}</span>
+      <span class="pill">{app}.store.{name}</span>
+      <span class="pill">{svc}.ep.{name}</span>
+      <span class="pill">{app}.svc.host.{cap}</span>
+      <span class="pill">{app}.svc.cloud.{name}</span>
+      <span class="pill">{svc}.evt.{name}</span>
+    </div>
+  </div>
+
+  <div class="centre">
+    <div class="centre-title">⬤ STRUCTURE</div>
+    <table>
+      <tr><td>app</td><td>Root container. One per product.</td></tr>
+      <tr><td>deck</td><td>Full-viewport destination. <span style="color:#666;font-size:7.5px">WML</span></td></tr>
+      <tr><td>card</td><td>One state of a deck. <span style="color:#666;font-size:7.5px">WML</span></td></tr>
+      <tr><td>layer</td><td>Persistent chrome across decks.</td></tr>
+      <tr><td>slot</td><td>Named region within a card.</td></tr>
+    </table>
+    <div class="id-row">
+      <span class="id-hi">trk</span> · <span class="id-hi">trk</span>.d2 · <span class="id-hi">trk</span>.d2.c3<br>
+      <span class="id-hi">trk</span>.d2.c3.s1 · <span class="id-hi">trk</span>.l1<br>
+      <span style="color:#666;font-size:7px">card names: default · empty · loading</span><br>
+      <span style="color:#666;font-size:7px">loaded · error · editing · saving · success</span>
+    </div>
+    <div style="font-size:7px;color:#666;text-align:center;margin-top:3px;border-top:0.5px solid #444;padding-top:3px">IDs: lowercase · dot-separated · stable · mandatory</div>
+  </div>
+
+  <div class="version">MADL v0.1 · IDs never reused · screenshots are not specs</div>
+</div>
