@@ -1,8 +1,32 @@
-# MADL_AGENT_INSTRUCTIONS_v0.1
+# MADL_AGENT_INSTRUCTIONS_v0.2
+
+## WHAT CHANGED FROM v0.1
+
+Single breaking change. All other rules carry forward unchanged.
+
+```
+RULE_03  v0.1: IDs are lowercase, alphanumeric segments separated by dots.
+               No spaces. No special chars.
+         v0.2: IDs are lowercase, readable slugs separated by dots.
+               Each segment is a meaningful word or short phrase.
+               Hyphens permitted within a segment. No spaces. No other special chars.
+               No length limit. No numeric shorthand.
+```
+
+All numeric shorthand ID patterns from v0.1 (`d{n}`, `c{n}`, `s{n}`, `e{n}`,
+`l{n}`, `o{n}`, `t{n}`, `stk{n}`, `tab{n}`, `drw{n}`) are deprecated.
+Any spec written using v0.1 ID patterns is a v0.1 spec and must be migrated
+before it is considered a valid v0.2 spec.
+
+---
 
 ## ROLE_CONTEXT
 
-You are working within a project that uses MADL (Mobile Application Description Language) as its single source of truth for application structure, navigation, interaction, elements, and services. MADL is the authoritative specification layer above all code. When MADL and code conflict, MADL is correct and code must be updated. Never infer structure from code if a MADL spec exists.
+You are working within a project that uses MADL (Mobile Application Description
+Language) as its single source of truth for application structure, navigation,
+interaction, elements, and services. MADL is the authoritative specification
+layer above all code. When MADL and code conflict, MADL is correct and code
+must be updated. Never infer structure from code if a MADL spec exists.
 
 ---
 
@@ -13,8 +37,10 @@ These rules override all other reasoning. Violating any of them is a spec error.
 ```
 RULE_01  Every node in the application MUST have a MADL ID before it is referenced anywhere.
 RULE_02  IDs are cascading dot-separated paths. They encode full hierarchy. Never shorten or alias.
-RULE_03  IDs are lowercase, alphanumeric segments separated by dots. No spaces. No special chars.
+RULE_03  IDs are lowercase readable slugs separated by dots. Each segment is a meaningful name,
+         unique among its siblings. Hyphens permitted within a segment. No numeric shorthand.
 RULE_04  IDs are permanent. Once assigned, never change. Never reuse a retired ID.
+         When an element is removed, retire its ID. Mint a new ID for its replacement.
 RULE_05  Closed enumerations are closed. Never add a value without a spec change.
 RULE_06  Structure (what exists) is described separately from Behaviour (what happens).
 RULE_07  "card" is a structural spec node. "state" refers to runtime data values only.
@@ -55,19 +81,32 @@ level_3    slot     Named region within a card. Accepts elements. Divides layout
 ### ID patterns
 
 ```
-TERM     PATTERN                    EXAMPLE
-app      {app_id}                   trk
-deck     {app}.d{n}                 trk.d2
-card     {deck}.c{n}                trk.d2.c3
-layer    {app}.l{n}                 trk.l1
-slot     {card}.s{n}                trk.d2.c3.s2
+TERM     PATTERN                          EXAMPLE
+app      {app_slug}                       tracker
+deck     {app}.{deck_name}                tracker.onboarding
+card     {deck}.{card_name}               tracker.onboarding.welcome
+layer    {app}.{layer_name}               tracker.nav-bar
+slot     {card}.{slot_name}               tracker.onboarding.welcome.header
 ```
 
 ### ID construction rules
 
 ```
-{app_id}   2-6 character alphanumeric slug. Unique per product. Chosen at project start.
-{n}        Positive integer. Assigned sequentially at node creation. Never reused.
+{app_slug}     Readable slug. Unique per product. Chosen at project start. Never changed.
+               Use the full or natural short form of the product name.
+               Examples: tracker, finance-manager, daily-log, health-monitor
+
+{deck_name}    Readable slug describing the deck's purpose or content.
+               Examples: onboarding, home, item-detail, settings
+
+{card_name}    One of the standard card name vocabulary, or a custom name if none applies.
+               Examples: default, empty, loading, editing, error
+
+{slot_name}    Readable slug describing the slot's layout region or purpose.
+               Examples: header, content, footer, form, actions
+
+{element_name} Readable slug describing the element's role or content.
+               Examples: save-button, email-field, avatar-image, items-list
 ```
 
 ### Mandatory deck properties
@@ -80,7 +119,7 @@ exit       SHOULD        {deck_id | card_id} — target on back/cancel/complete
 
 ### Standard card name vocabulary
 
-These are recommended identifiers for the `c{n}` nodes. Use consistently.
+These are recommended names for card nodes. Use consistently.
 
 ```
 NAME       CONDITION
@@ -96,7 +135,10 @@ success    Operation completed successfully.
 
 ### Inference rule for card naming
 
-When reading a spec, if a card is described as "the screen where the user fills in the form", map it to `editing`. If described as "the screen after successful save", map it to `success`. Apply the standard name vocabulary before creating custom names.
+When reading a spec, if a card is described as "the screen where the user fills
+in the form", map it to `editing`. If described as "the screen after successful
+save", map it to `success`. Apply the standard name vocabulary before creating
+custom names.
 
 ---
 
@@ -118,12 +160,12 @@ exit      The card or deck reached when user navigates back/cancel/complete.
 ### ID patterns
 
 ```
-TERM      PATTERN                 EXAMPLE
-atlas     {app}.atlas             trk.atlas
-stack     {app}.nav.stk{n}        trk.nav.stk1
-tabset    {app}.nav.tab{n}        trk.nav.tab1
-drawer    {app}.nav.drw{n}        trk.nav.drw1
-flow      {app}.flow.{name}       trk.flow.onboard
+TERM      PATTERN                          EXAMPLE
+atlas     {app}.atlas                      tracker.atlas
+stack     {app}.nav.{stack_name}           tracker.nav.main-stack
+tabset    {app}.nav.{tabset_name}          tracker.nav.main-tabs
+drawer    {app}.nav.{drawer_name}          tracker.nav.settings-drawer
+flow      {app}.flow.{flow_name}           tracker.flow.onboarding
 ```
 
 ### Atlas declaration schema
@@ -176,9 +218,9 @@ gesture       The physical trigger type. Closed enumeration — see below.
 ### ID patterns
 
 ```
-TERM      PATTERN            EXAMPLE
-trigger   {card}.t{n}        trk.d2.c1.t1
-action    {trigger}.a        trk.d2.c1.t1.a
+TERM      PATTERN                              EXAMPLE
+trigger   {card}.{trigger_name}               tracker.onboarding.welcome.tap-continue
+action    {trigger}.action                    tracker.onboarding.welcome.tap-continue.action
 ```
 
 ### Gesture enumeration (closed — exhaustive)
@@ -262,9 +304,9 @@ overlay   new            Element rendered above the card surface. Always sub-typ
 ### ID patterns
 
 ```
-TERM      PATTERN         EXAMPLE
-element   {slot}.e{n}     trk.d2.c1.s2.e1
-overlay   {card}.o{n}     trk.d2.c1.o1
+TERM      PATTERN                              EXAMPLE
+element   {slot}.{element_name}               tracker.home.loaded.content.items-list
+overlay   {card}.{overlay_name}               tracker.home.loaded.add-item-dialog
 ```
 
 ### Element type enumeration (closed — exhaustive)
@@ -331,7 +373,8 @@ When `bound-to` references an endpoint:
 bound-to: {app}.svc.{name}.ep.{name}
 ```
 
-A `list` element's `bound-to` resolves to a collection endpoint or store table. Each list item inherits the element schema of its parent list.
+A `list` element's `bound-to` resolves to a collection endpoint or store table.
+Each list item inherits the element schema of its parent list.
 
 ---
 
@@ -353,13 +396,13 @@ event       Async message arriving from a service. May trigger card change.
 ### ID patterns
 
 ```
-TERM              PATTERN                       EXAMPLE
-service           {app}.svc.{name}              trk.svc.api
-store             {app}.store.{name}            trk.store.db
-endpoint          {service}.ep.{name}           trk.svc.api.ep.save
-host capability   {app}.svc.host.{cap}          trk.svc.host.gps
-cloud service     {app}.svc.cloud.{name}        trk.svc.cloud.auth
-event             {service}.evt.{name}          trk.svc.api.evt.sync
+TERM              PATTERN                              EXAMPLE
+service           {app}.svc.{name}                    tracker.svc.api
+store             {app}.store.{name}                  tracker.store.local
+endpoint          {service}.ep.{name}                 tracker.svc.api.ep.save-entry
+host capability   {app}.svc.host.{cap}                tracker.svc.host.gps
+cloud service     {app}.svc.cloud.{name}              tracker.svc.cloud.auth
+event             {service}.evt.{name}                tracker.svc.api.evt.save-complete
 ```
 
 ### Service declaration schema
@@ -387,7 +430,7 @@ event             {service}.evt.{name}          trk.svc.api.evt.sync
 ```yaml
 {service}.evt.{name}:
   source:    {service_id}
-  trigger:   {card_id}.t{n}              # which trigger it fires
+  trigger:   {trigger_id}
   payload:   {description}
 ```
 
@@ -406,33 +449,37 @@ bluetooth
 The full canonical ID tree in derivation order:
 
 ```
-{app}                                    root
-{app}.d{n}                               deck
-{app}.d{n}.c{n}                          card
-{app}.d{n}.c{n}.s{n}                     slot
-{app}.d{n}.c{n}.s{n}.e{n}               element
-{app}.d{n}.c{n}.t{n}                     trigger
-{app}.d{n}.c{n}.t{n}.a                   action
-{app}.d{n}.c{n}.o{n}                     overlay
-{app}.l{n}                               layer
-{app}.atlas                              atlas (singleton)
-{app}.nav.stk{n}                         stack navigator
-{app}.nav.tab{n}                         tabset navigator
-{app}.nav.drw{n}                         drawer navigator
-{app}.flow.{name}                        named flow
-{app}.svc.{name}                         service
-{app}.svc.host.{cap}                     host capability
-{app}.svc.cloud.{name}                   cloud service
-{app}.store.{name}                       local store
-{app}.svc.{name}.ep.{name}              endpoint
-{app}.svc.{name}.evt.{name}             event
+{app}                                        root
+{app}.{deck}                                 deck
+{app}.{deck}.{card}                          card
+{app}.{deck}.{card}.{slot}                   slot
+{app}.{deck}.{card}.{slot}.{element}         element
+{app}.{deck}.{card}.{trigger}                trigger
+{app}.{deck}.{card}.{trigger}.action         action
+{app}.{deck}.{card}.{overlay}                overlay
+{app}.{layer}                                layer
+{app}.atlas                                  atlas (singleton)
+{app}.nav.{stack}                            stack navigator
+{app}.nav.{tabset}                           tabset navigator
+{app}.nav.{drawer}                           drawer navigator
+{app}.flow.{flow}                            named flow
+{app}.svc.{name}                             service
+{app}.svc.host.{cap}                         host capability
+{app}.svc.cloud.{name}                       cloud service
+{app}.store.{name}                           local store
+{app}.svc.{name}.ep.{name}                  endpoint
+{app}.svc.{name}.evt.{name}                 event
 ```
+
+All segments in `{}` are readable slugs chosen by the spec author.
+No segment is a number. No segment is a type-prefix plus integer.
 
 ---
 
 ## PARSING_RULES
 
-When you receive a natural language description of an application, apply these rules to produce MADL output:
+When you receive a natural language description of an application, apply these
+rules to produce MADL output:
 
 ```
 PARSE_01  Identify all full-viewport destinations → assign as deck nodes.
@@ -451,6 +498,11 @@ PARSE_13  When a description mentions "tabs", interpret as tabset navigation.
 PARSE_14  When a description mentions "settings" or "menu", interpret as drawer navigation.
 PARSE_15  When a description mentions "popup", "dialog", "confirm" → overlay type: dialog.
 PARSE_16  When a description mentions "swipe between", interpret as tabset or stack with swipe gesture.
+PARSE_17  Choose ID segments that describe what the thing IS, not what it looks like.
+          "item-list" not "big-scrollable-area". "save-button" not "blue-button".
+PARSE_18  When two siblings would have the same readable name, disambiguate with
+          a qualifying word. "primary-save-button" and "secondary-save-button",
+          not "save-button-1" and "save-button-2".
 ```
 
 ---
@@ -466,7 +518,7 @@ When producing MADL specifications, use this structure:
 # date: {date}
 
 {app_id}:
-  name: {human readable name}
+  name: {human readable product name}
 
   atlas:
     {deck_id}:
@@ -540,8 +592,9 @@ CHECK_07  Every toast overlay has an auto-dismiss value.
 CHECK_08  Every element has a type declared.
 CHECK_09  Every list element has a bound-to declared.
 CHECK_10  No ID appears more than once in the specification.
-CHECK_11  No ID contains uppercase letters, spaces, or special characters.
-CHECK_12  All {n} values within a parent scope are unique positive integers.
+CHECK_11  No ID contains uppercase letters, spaces, or special characters except hyphens.
+CHECK_12  No ID segment is a number or a type-prefix plus integer (d1, c2, s3, e4 etc.).
+CHECK_13  All ID segments within a parent scope are unique readable slugs.
 ```
 
 ---
@@ -557,6 +610,8 @@ Two valid MADL IDs for same thing           Flag as duplicate. Request resolutio
 Gesture not in enumeration                  Use system-event. Flag for spec extension.
 Transition not in enumeration               Use closest existing type. Flag for spec extension.
 Card condition not in standard names        Create custom name. Document in spec comments.
+Element removed and replaced                Retire old ID. Mint new ID. Log in CHANGELOG.
+v0.1 numeric ID found in a v0.2 spec       Flag as migration error. Replace with readable slug.
 ```
 
 ---
@@ -564,198 +619,203 @@ Card condition not in standard names        Create custom name. Document in spec
 ## EXAMPLE_END_TO_END
 
 Natural language input:
-> "The app opens. If the user has a default item set, go straight to the data entry screen.
-> Otherwise show a selection screen where they pick or add an item.
-> On the data entry screen they fill a form and tap Save.
-> If valid, save to the database and show the most recent history entry.
-> History shows the last 5 entries as swipeable screens."
+> "The app opens. If the user has a default item set, go straight to the data
+> entry screen. Otherwise show a selection screen where they pick or add an
+> item. On the data entry screen they fill a form and tap Save. If valid, save
+> to the database and show the most recent history entry. History shows the
+> last 5 entries as swipeable screens."
 
 MADL output:
 
 ```yaml
-trk:
+# MADL specification
+# app: tracker
+# version: 0.2.0
+# date: 2026-04-07
+
+tracker:
   name: Tracker
 
   atlas:
-    trk.d1:
-      entry: trk.d1.c1
-      exit:  trk.d1.c1
-      nav:   trk.nav.stk1
-    trk.d2:
-      entry: trk.d2.c1
-      exit:  trk.d1.c1
-      nav:   trk.nav.stk1
-    trk.d3:
-      entry: trk.d3.c1
-      exit:  trk.d2.c1
-      nav:   trk.nav.tab1
-    trk.d4:
-      entry: trk.d4.c1
-      exit:  trk.d2.c1
-      nav:   trk.nav.tab1
-    trk.d5:
-      entry: trk.d5.c1
-      nav:   trk.nav.tab1
-    trk.d6:
-      entry: trk.d6.c1
-      nav:   trk.nav.tab1
-    trk.d7:
-      entry: trk.d7.c1
-      nav:   trk.nav.tab1
+    tracker.item-selection:
+      entry: tracker.item-selection.default
+      exit:  tracker.item-selection.default
+      nav:   tracker.nav.main-stack
+    tracker.data-entry:
+      entry: tracker.data-entry.default
+      exit:  tracker.item-selection.default
+      nav:   tracker.nav.main-stack
+    tracker.history-1:
+      entry: tracker.history-1.loaded
+      exit:  tracker.data-entry.default
+      nav:   tracker.nav.history-tabs
+    tracker.history-2:
+      entry: tracker.history-2.loaded
+      exit:  tracker.data-entry.default
+      nav:   tracker.nav.history-tabs
+    tracker.history-3:
+      entry: tracker.history-3.loaded
+      nav:   tracker.nav.history-tabs
+    tracker.history-4:
+      entry: tracker.history-4.loaded
+      nav:   tracker.nav.history-tabs
+    tracker.history-5:
+      entry: tracker.history-5.loaded
+      nav:   tracker.nav.history-tabs
 
   navigators:
-    trk.nav.stk1:
+    tracker.nav.main-stack:
       type: stack
-    trk.nav.tab1:
+    tracker.nav.history-tabs:
       type: tabset
 
   decks:
 
-    trk.d1:
+    tracker.item-selection:
       name: Item Selection
       cards:
-        trk.d1.c1:
+        tracker.item-selection.default:
           name: default
           triggers:
-            trk.d1.c1.t1:
+            tracker.item-selection.default.auto-select:
               gesture: system-event
               guard: user.default_item != null
               action:
                 type: replace
-                target: trk.d2.c1
-            trk.d1.c1.t2:
+                target: tracker.data-entry.default
+            tracker.item-selection.default.tap-item:
               gesture: tap
-              element: trk.d1.c1.s1.e1
+              element: tracker.item-selection.default.content.items-list
               action:
                 type: push
-                target: trk.d2.c1
+                target: tracker.data-entry.default
           slots:
-            trk.d1.c1.s1:
+            tracker.item-selection.default.content:
               elements:
-                trk.d1.c1.s1.e1:
+                tracker.item-selection.default.content.items-list:
                   type: list
-                  bound-to: trk.store.db.ep.items
-                trk.d1.c1.s1.e2:
+                  bound-to: tracker.store.local.ep.items
+                tracker.item-selection.default.content.add-item-button:
                   type: control
                   label: Add Item
 
-    trk.d2:
+    tracker.data-entry:
       name: Data Entry
       cards:
-        trk.d2.c1:
+        tracker.data-entry.default:
           name: default
-        trk.d2.c2:
+        tracker.data-entry.editing:
           name: editing
           triggers:
-            trk.d2.c2.t1:
+            tracker.data-entry.editing.tap-save-valid:
               gesture: tap
-              element: trk.d2.c2.s2.e1
+              element: tracker.data-entry.editing.actions.save-button
               action:
                 type: replace
-                target: trk.d2.c3
+                target: tracker.data-entry.saving
                 guard: form.valid == true
-            trk.d2.c2.t2:
+            tracker.data-entry.editing.tap-save-invalid:
               gesture: tap
-              element: trk.d2.c2.s2.e1
+              element: tracker.data-entry.editing.actions.save-button
               action:
                 type: replace
-                target: trk.d2.c4
+                target: tracker.data-entry.error
                 guard: form.valid == false
           slots:
-            trk.d2.c2.s1:
+            tracker.data-entry.editing.form:
               elements:
-                trk.d2.c2.s1.e1:
+                tracker.data-entry.editing.form.data-field:
                   type: field
                   placeholder: Enter data
-            trk.d2.c2.s2:
+            tracker.data-entry.editing.actions:
               elements:
-                trk.d2.c2.s2.e1:
+                tracker.data-entry.editing.actions.save-button:
                   type: control
                   label: Save
-        trk.d2.c3:
+        tracker.data-entry.saving:
           name: saving
           triggers:
-            trk.d2.c3.t1:
+            tracker.data-entry.saving.on-save-complete:
               gesture: system-event
               action:
                 type: replace
-                target: trk.d3.c1
-        trk.d2.c4:
+                target: tracker.history-1.loaded
+        tracker.data-entry.error:
           name: error
 
-    trk.d3:
-      name: History -1 (latest)
+    tracker.history-1:
+      name: History — Latest
       cards:
-        trk.d3.c1:
+        tracker.history-1.loaded:
           name: loaded
           slots:
-            trk.d3.c1.s1:
+            tracker.history-1.loaded.content:
               elements:
-                trk.d3.c1.s1.e1:
+                tracker.history-1.loaded.content.entry-label:
                   type: label
-                  bound-to: trk.store.db.ep.history_1
-        trk.d3.c2:
+                  bound-to: tracker.store.local.ep.history-latest
+        tracker.history-1.empty:
           name: empty
 
-    trk.d4:
-      name: History -2
+    tracker.history-2:
+      name: History — 2nd
       cards:
-        trk.d4.c1:
+        tracker.history-2.loaded:
           name: loaded
           slots:
-            trk.d4.c1.s1:
+            tracker.history-2.loaded.content:
               elements:
-                trk.d4.c1.s1.e1:
+                tracker.history-2.loaded.content.entry-label:
                   type: label
-                  bound-to: trk.store.db.ep.history_2
-        trk.d4.c2:
+                  bound-to: tracker.store.local.ep.history-2nd
+        tracker.history-2.empty:
           name: empty
 
-    trk.d5:
-      name: History -3
+    tracker.history-3:
+      name: History — 3rd
       cards:
-        trk.d5.c1:
+        tracker.history-3.loaded:
           name: loaded
-        trk.d5.c2:
+        tracker.history-3.empty:
           name: empty
 
-    trk.d6:
-      name: History -4
+    tracker.history-4:
+      name: History — 4th
       cards:
-        trk.d6.c1:
+        tracker.history-4.loaded:
           name: loaded
-        trk.d6.c2:
+        tracker.history-4.empty:
           name: empty
 
-    trk.d7:
-      name: History -5
+    tracker.history-5:
+      name: History — 5th
       cards:
-        trk.d7.c1:
+        tracker.history-5.loaded:
           name: loaded
-        trk.d7.c2:
+        tracker.history-5.empty:
           name: empty
 
   services:
-    trk.store.db:
+    tracker.store.local:
       type: store
       protocol: native
       endpoints:
-        trk.store.db.ep.save:
+        tracker.store.local.ep.save-entry:
           method: POST
           path: /entries
-          on-error: trk.d2.c4
-        trk.store.db.ep.items:
+          on-error: tracker.data-entry.error
+        tracker.store.local.ep.items:
           method: GET
           path: /items
-        trk.store.db.ep.history_1:
+        tracker.store.local.ep.history-latest:
           method: GET
           path: /entries?offset=0&limit=1
-        trk.store.db.ep.history_2:
+        tracker.store.local.ep.history-2nd:
           method: GET
           path: /entries?offset=1&limit=1
       events:
-        trk.store.db.evt.save_complete:
-          trigger: trk.d2.c3.t1
+        tracker.store.local.evt.save-complete:
+          trigger: tracker.data-entry.saving.on-save-complete
 ```
 
 ---
@@ -763,12 +823,14 @@ trk:
 ## META
 
 ```
-language:   MADL
-version:    0.1
-intended_reader: AI coding agent
-human_readable: false
-source_of_truth: MADL spec always supersedes code and screenshots
-wml_terms_reused: deck, card, entry, exit, action (from <do>), field (from <input>), label (from <p>)
-total_terms: 34
-closed_enumerations: gesture_types, transition_types, overlay_subtypes, host_capabilities
+language:             MADL
+version:              0.2
+intended_reader:      AI coding agent
+human_readable:       true (by design — readable slug IDs)
+source_of_truth:      MADL spec always supersedes code and screenshots
+wml_terms_reused:     deck, card, entry, exit, action (from <do>), field (from <input>), label (from <p>)
+total_terms:          34
+closed_enumerations:  gesture_types, transition_types, overlay_subtypes, host_capabilities
+breaking_change:      RULE_03 — ID format. v0.1 numeric shorthand deprecated.
+decided:              2026-04-07 via issue #3 sba1966/MADL
 ```
