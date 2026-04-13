@@ -59,6 +59,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   Affects: Standard card name vocabulary, Inference rule for card naming.
   Decided: 2026-04-10 via issue #8 sba1966/MADL.
 
+- **Runtime form state vocabulary documented** (issue #10)
+  Added explicit runtime state vocabulary subsection to guard expression format.
+  Defined three closed runtime form state identifiers: `form.valid`, `form.dirty`,
+  and `form.pristine`. These were previously used in examples but not formally
+  documented as a closed enumeration.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Guard expression format (BASKET_3).
+  Decided: 2026-04-10 via issue #10 sba1966/MADL.
+
 ### Pending
 - v0.2 versions of all primary spec documents to be authored
 - GitHub milestone v0.2 to be opened to track breaking changes

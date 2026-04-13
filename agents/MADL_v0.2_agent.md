@@ -294,6 +294,19 @@ Examples:
   input.length > 0
 ```
 
+### Runtime state vocabulary
+
+These runtime form state identifiers are supported in guard expressions.
+This is a closed enumeration — additional identifiers outside this set
+are not permitted.
+
+```
+IDENTIFIER      DEFINITION
+form.valid      true if all required fields pass validation
+form.dirty      true if any field value differs from its bound-to value
+form.pristine   true if no field values have changed (opposite of form.dirty)
+```
+
 ---
 
 ## BASKET_4: ELEMENTS
