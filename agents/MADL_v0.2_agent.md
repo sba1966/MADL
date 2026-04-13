@@ -346,6 +346,7 @@ action-sheet   List of options sliding up. Contextual choices.
   modal:       true | false             # overlays only
   auto-dismiss: {integer}               # toast only — seconds
   placeholder: {string}                # field only
+  input-type:  text | number | decimal | email | phone | date | url  # field only
 ```
 
 ### Property requirement matrix
@@ -359,6 +360,7 @@ visible-if     OPT     OPT     OPT       OPT     OPT    OPT
 modal          -       -       -         -       -      MUST
 auto-dismiss   -       -       -         -       -      toast only
 placeholder    OPT     -       -         -       -      -
+input-type     OPT     -       -         -       -      -
 ```
 
 ### Binding resolution rules
@@ -595,6 +597,7 @@ CHECK_10  No ID appears more than once in the specification.
 CHECK_11  No ID contains uppercase letters, spaces, or special characters except hyphens.
 CHECK_12  No ID segment is a number or a type-prefix plus integer (d1, c2, s3, e4 etc.).
 CHECK_13  All ID segments within a parent scope are unique readable slugs.
+CHECK_14  Every field with input-type declares a value from the closed input-type enumeration.
 ```
 
 ---

@@ -21,6 +21,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   EXAMPLE_END_TO_END in agent instructions; reference booklet; cheatsheet.
   Decided: 2026-04-07 via issue #3 sba1966/MADL.
 
+### Added
+- **input-type property for field elements** (issue #4)
+  Added optional `input-type` property to field declaration schema with closed
+  enumeration: `text | number | decimal | email | phone | date | url`.
+  Defaults to `text`. Specifies the keyboard type presented to the user when
+  the field is focused. This is a clarification, not a breaking change: no
+  existing valid MADL file becomes invalid.
+  Affects: Element declaration schema, Property requirement matrix, VALIDATION_CHECKLIST (CHECK_14).
+  Decided: 2026-04-10 via issue #4 sba1966/MADL.
+
 ### Pending
 - v0.2 versions of all primary spec documents to be authored
 - GitHub milestone v0.2 to be opened to track breaking changes
