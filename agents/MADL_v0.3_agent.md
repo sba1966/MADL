@@ -1,8 +1,24 @@
-# MADL_AGENT_INSTRUCTIONS_v0.2
+# MADL_AGENT_INSTRUCTIONS_v0.3
 
-## WHAT CHANGED FROM v0.1
+## WHAT CHANGED FROM v0.2
 
-Single breaking change. All other rules carry forward unchanged.
+All changes from v0.2 to v0.3 are non-breaking clarifications and extensions.
+No existing valid v0.2 spec becomes invalid under v0.3.
+
+```
+Added in v0.3:
+- input-type property for field elements
+- scroll property for list elements
+- overlay_id support for sheet-up/sheet-down transition targets
+- Extended standard card name vocabulary (adding, deleting, confirming)
+- Runtime form state vocabulary documented
+- columns property for list elements
+- item-triggers support for list elements
+```
+
+## WHAT CHANGED FROM v0.1 (v0.2 breaking change)
+
+Single breaking change from v0.1 to v0.2. All other rules carry forward unchanged.
 
 ```
 RULE_03  v0.1: IDs are lowercase, alphanumeric segments separated by dots.
@@ -855,13 +871,15 @@ tracker:
 
 ```
 language:             MADL
-version:              0.2
+version:              0.3
 intended_reader:      AI coding agent
 human_readable:       true (by design — readable slug IDs)
 source_of_truth:      MADL spec always supersedes code and screenshots
 wml_terms_reused:     deck, card, entry, exit, action (from <do>), field (from <input>), label (from <p>)
 total_terms:          34
-closed_enumerations:  gesture_types, transition_types, overlay_subtypes, host_capabilities
-breaking_change:      RULE_03 — ID format. v0.1 numeric shorthand deprecated.
-decided:              2026-04-07 via issue #3 sba1966/MADL
+closed_enumerations:  gesture_types, transition_types, overlay_subtypes, host_capabilities,
+                      input_types, scroll_directions, form_state_identifiers
+breaking_change:      RULE_03 — ID format. v0.1 numeric shorthand deprecated (v0.2).
+                      No breaking changes in v0.3.
+decided:              2026-04-13 via issues #4-#10 sba1966/MADL
 ```
