@@ -49,6 +49,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   Affects: Action declaration schema, VALIDATION_CHECKLIST (CHECK_02, CHECK_16, CHECK_17).
   Decided: 2026-04-10 via issue #7 sba1966/MADL.
 
+- **Standard card name vocabulary extended** (issue #8)
+  Added three new standard card names: `adding` (user creating new record),
+  `deleting` (delete operation in flight), and `confirming` (user presented
+  with destructive action requiring acknowledgement). Updated inference rules
+  to include mapping examples for all standard card names.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Standard card name vocabulary, Inference rule for card naming.
+  Decided: 2026-04-10 via issue #8 sba1966/MADL.
+
 ### Pending
 - v0.2 versions of all primary spec documents to be authored
 - GitHub milestone v0.2 to be opened to track breaking changes

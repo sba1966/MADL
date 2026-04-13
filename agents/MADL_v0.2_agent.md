@@ -128,17 +128,27 @@ empty      No data to display. First-use or post-clear state.
 loading    Async operation in progress. Data not yet available.
 loaded     Data present and rendered. Primary content state.
 error      A failure occurred. Network, validation, or server.
+adding     User is filling in a form to create a new record.
 editing    User is actively modifying existing data.
 saving     Write operation in flight. Awaiting confirmation.
+deleting   Delete operation in flight. Awaiting confirmation or completion.
+confirming User presented with a destructive or irreversible action requiring explicit acknowledgement.
 success    Operation completed successfully.
 ```
 
 ### Inference rule for card naming
 
-When reading a spec, if a card is described as "the screen where the user fills
-in the form", map it to `editing`. If described as "the screen after successful
-save", map it to `success`. Apply the standard name vocabulary before creating
-custom names.
+When reading a spec, apply the standard name vocabulary before creating custom names:
+- "user creates a new record" → `adding`
+- "user fills in the form" (existing record) → `editing`
+- "user confirms deletion" → `confirming`
+- "delete in progress" → `deleting`
+- "save in progress" → `saving`
+- "after successful save" → `success`
+- "no data available" → `empty`
+- "data loading" → `loading`
+- "data displayed" → `loaded`
+- "operation failed" → `error`
 
 ---
 
