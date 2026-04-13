@@ -65,6 +65,16 @@ No existing valid v0.2 spec becomes invalid under v0.3.
   Affects: Element declaration schema, Property requirement matrix.
   Decided: 2026-04-13 via issue #6 sba1966/MADL.
 
+- **item-triggers support for list elements** (issue #9)
+  Added optional `item-triggers` property to list element schema to support
+  triggers that fire from within specific elements inside list items. Each
+  item-trigger can specify gesture, element, action, and context passing using
+  `{list_id}.selected` pattern. Target cards can reference selected item fields
+  in guards or bound-to expressions. This enables distinction between "tap item
+  to select" and "tap button within item to perform action" scenarios.
+  Affects: Element declaration schema, Property requirement matrix, Binding resolution rules.
+  Decided: 2026-04-13 via issue #9 sba1966/MADL.
+
 ---
 
 ## [0.2.0] — 2026-04-10

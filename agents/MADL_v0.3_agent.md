@@ -390,6 +390,14 @@ action-sheet   List of options sliding up. Contextual choices.
   columns:                              # list only — optional tabular structure
     - field: {field_name}
       label: {display_label}
+  item-triggers:                        # list only — triggers within list items
+    {trigger_name}:
+      gesture: {gesture_value}
+      element: {element_within_item}    # optional — element within item template
+      action:
+        type: {transition_type}
+        target: {card_id | deck_id | overlay_id}
+        context: {list_id}.selected     # passes selected item to target
 ```
 
 ### Property requirement matrix
@@ -406,6 +414,7 @@ placeholder    OPT     -       -         -       -      -
 input-type     OPT     -       -         -       -      -
 scroll         -       -       -         -       OPT    -
 columns        -       -       -         -       OPT    -
+item-triggers  -       -       -         -       OPT    -
 ```
 
 ### Binding resolution rules
@@ -422,6 +431,27 @@ bound-to: {app}.svc.{name}.ep.{name}
 
 A `list` element's `bound-to` resolves to a collection endpoint or store table.
 Each list item inherits the element schema of its parent list.
+
+### List item triggers and context passing
+
+When an `item-trigger` fires, the selected item context is passed to the target
+card using the `context` property. The context reference follows this pattern:
+
+```
+context: {list_id}.selected
+```
+
+The target card can reference the selected item in guards or bound-to expressions:
+
+```yaml
+# In guard expression
+guard: {list_id}.selected.id != null
+
+# In bound-to binding
+bound-to: {list_id}.selected.id
+```
+
+This allows the target card to access fields from the selected list item.
 
 ---
 
