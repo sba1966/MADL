@@ -387,6 +387,9 @@ action-sheet   List of options sliding up. Contextual choices.
   placeholder: {string}                # field only
   input-type:  text | number | decimal | email | phone | date | url  # field only
   scroll:      vertical | horizontal | both  # list only — default: vertical
+  columns:                              # list only — optional tabular structure
+    - field: {field_name}
+      label: {display_label}
 ```
 
 ### Property requirement matrix
@@ -402,6 +405,7 @@ auto-dismiss   -       -       -         -       -      toast only
 placeholder    OPT     -       -         -       -      -
 input-type     OPT     -       -         -       -      -
 scroll         -       -       -         -       OPT    -
+columns        -       -       -         -       OPT    -
 ```
 
 ### Binding resolution rules

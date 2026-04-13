@@ -57,6 +57,14 @@ No existing valid v0.2 spec becomes invalid under v0.3.
   Affects: Guard expression format (BASKET_3).
   Decided: 2026-04-10 via issue #10 sba1966/MADL.
 
+- **columns property for list elements** (issue #6)
+  Added optional `columns` property to list element schema for tabular data.
+  Each column entry declares `field` (field name) and `label` (display label).
+  Column order is determined by sequence in the array. This addresses the need
+  to explicitly declare table structure for list elements displaying tabular data.
+  Affects: Element declaration schema, Property requirement matrix.
+  Decided: 2026-04-13 via issue #6 sba1966/MADL.
+
 ---
 
 ## [0.2.0] — 2026-04-10
