@@ -31,6 +31,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   Affects: Element declaration schema, Property requirement matrix, VALIDATION_CHECKLIST (CHECK_14).
   Decided: 2026-04-10 via issue #4 sba1966/MADL.
 
+- **scroll property for list elements** (issue #5)
+  Added optional `scroll` property to list element schema with closed
+  enumeration: `vertical | horizontal | both`.
+  Defaults to `vertical`. Specifies the scroll direction for list elements.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Element declaration schema, Property requirement matrix, VALIDATION_CHECKLIST (CHECK_15).
+  Decided: 2026-04-10 via issue #5 sba1966/MADL.
+
 ### Pending
 - v0.2 versions of all primary spec documents to be authored
 - GitHub milestone v0.2 to be opened to track breaking changes
