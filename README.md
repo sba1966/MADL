@@ -27,7 +27,7 @@ New here? Read **[QUICKSTART.md](./QUICKSTART.md)** first.
 Six steps from "I have an app idea" to "my agent knows exactly what to build".
 
 Wondering where this goes? Read **[ROADMAP.md](./ROADMAP.md)**.
-An honest account of what MADL 0.1 is, what 1.0 requires,
+An honest account of what MADL is today, what 1.0 requires,
 and how we — you, the community, and an AI — get there together.
 
 ---
@@ -95,11 +95,11 @@ capabilities, cloud services, async events.
 
 The result is a description language that:
 
-- Has **34 terms** covering the full surface of a mobile application
-- Reuses **6 WML terms** that still fit exactly
-- Enforces **mandatory cascading IDs** that encode hierarchy at a glance
-- Uses **4 closed enumerations** for gestures, transitions, overlays, and host capabilities
-- Fits on **one A4 landscape cheatsheet**
+- Has **36 terms** across **6 baskets** covering the full surface of a mobile application
+- Reuses **7 WML terms** that still fit exactly
+- Enforces **mandatory cascading readable IDs** that encode hierarchy at a glance
+- Uses **7 closed enumerations** for gestures, transitions, overlays, host capabilities, input types, scroll directions, and form state
+- Supports **templates** for DRY repeated structures
 - Is readable by humans and AI agents equally
 
 ---
@@ -108,13 +108,14 @@ The result is a description language that:
 
 A shared dictionary. A naming convention. A description standard.
 
-When you write `trk.d2.c3.t1.a → trk.d3.c1` you have said: in the Tracker
-app, deck 2, card 3, trigger 1's action navigates to deck 3 card 1. Anyone
-who knows MADL — human or agent — knows exactly what that means and exactly
-which file to open.
+When you write `tracker.data-entry.editing.tap-save.action → tracker.history.loaded`
+you have said: in the Tracker app, the data-entry deck's editing card has a
+tap-save trigger whose action navigates to the history deck's loaded card.
+Anyone who knows MADL — human or agent — knows exactly what that means and
+exactly which file to open.
 
-When you tell an AI coding agent *"change the guard on `trk.d2.c2.t1` so
-it also checks `user.premium == true`"*, the agent knows the deck, the card,
+When you tell an AI coding agent *"change the guard on `tracker.data-entry.editing.tap-save`
+so it also checks `user.premium == true`"*, the agent knows the deck, the card,
 the trigger, the condition. It does not guess. It does not open every file
 looking for something that might match.
 
@@ -130,9 +131,9 @@ application does, independent of how it is built.
 
 ---
 
-## The Five Baskets
+## The Six Baskets
 
-MADL organises every concept in a mobile application into five baskets.
+MADL organises every concept in a mobile application into six baskets.
 
 ```
 ┌─────────────────────┬──────────────────────┐
@@ -145,7 +146,10 @@ MADL organises every concept in a mobile application into five baskets.
 ├─────────┴─────────────────┬────────────────┤
 │   ELEMENTS                │   SERVICES     │
 │   what populates          │   what connects│
-└───────────────────────────┴────────────────┘
+├───────────────────────────┴────────────────┤
+│              TEMPLATES                     │
+│         reusable patterns                  │
+└────────────────────────────────────────────┘
 ```
 
 | Basket | Contains |
@@ -155,30 +159,34 @@ MADL organises every concept in a mobile application into five baskets.
 | **INTERACTION** | `trigger` · `action` · `transition` · `guard` · `gesture` |
 | **ELEMENTS** | `element` · `field` · `label` · `control` · `media` · `list` · `overlay` |
 | **SERVICES** | `service` · `store` · `endpoint` · `binding` · `host` · `cloud` · `event` |
+| **TEMPLATES** | `template` · `variation` |
 
 ---
 
 ## The ID Convention
 
-Every node in a MADL-described application has a mandatory cascading ID.
-The ID encodes the full path from the app root. You never need a lookup
-table to understand where something lives.
+Every node in a MADL-described application has a mandatory cascading ID
+using readable slugs. The ID encodes the full path from the app root.
+You never need a lookup table to understand where something lives.
 
 ```
-trk                         app: Tracker
-trk.d2                      deck 2
-trk.d2.c3                   card 3 of deck 2
-trk.d2.c3.s1                slot 1 of that card
-trk.d2.c3.s1.e2             element 2 in that slot
-trk.d2.c3.t1                trigger 1 on that card
-trk.d2.c3.t1.a              the action of that trigger
-trk.svc.api.ep.save         the save endpoint of the api service
+tracker                                     app: Tracker
+tracker.data-entry                          data entry deck
+tracker.data-entry.editing                  editing card of that deck
+tracker.data-entry.editing.form             form slot of that card
+tracker.data-entry.editing.form.email       email field in that slot
+tracker.data-entry.editing.tap-save         save trigger on that card
+tracker.data-entry.editing.tap-save.action  the action of that trigger
+tracker.svc.api.ep.save-entry               the save-entry endpoint of api service
 ```
 
 Rules:
-- Lowercase. Dot-separated. No spaces. No special characters.
-- `{n}` values are stable positive integers. Never reused after retirement.
-- No ID exists without a corresponding spec declaration.
+- Lowercase readable slugs separated by dots
+- Each segment is a meaningful word or short phrase
+- Hyphens permitted within a segment for multi-word names
+- No spaces, no numeric shorthand, no type prefixes
+- IDs are permanent — once assigned, never changed or reused
+- No ID exists without a corresponding spec declaration
 
 ---
 
@@ -191,7 +199,9 @@ MADL/
 ├── CONTRIBUTING.md              ← how to propose changes
 │
 ├── agents/
-│   └── MADL_v0.1_agent.md       ← instruction file for AI coding agents
+│   ├── MADL_v0.1_agent.md       ← v0.1 (deprecated - numeric IDs)
+│   ├── MADL_v0.2_agent.md       ← v0.2 (readable slugs)
+│   └── MADL_v0.3_agent.md       ← v0.3 (current - with templates)
 │
 ├── print/
 │   └── MADL_v0.1_reference.pdf  ← printable A4 reference booklet
@@ -201,7 +211,8 @@ MADL/
     ├── navigation/              ← BASKET 2: how user moves
     ├── interaction/             ← BASKET 3: what user does
     ├── elements/                ← BASKET 4: what populates cards
-    └── services/                ← BASKET 5: what the app connects to
+    ├── services/                ← BASKET 5: what the app connects to
+    └── templates/               ← BASKET 6: reusable patterns
 ```
 
 Each term in `src/` has its own markdown file. Same template throughout:
@@ -218,37 +229,47 @@ myapp:
   name: My Application
 
   atlas:
-    myapp.d1:
-      entry: myapp.d1.c1
-      exit:  myapp.d1.c1
-      nav:   myapp.nav.stk1
+    myapp.home:
+      entry: myapp.home.default
+      exit:  myapp.home.default
+      nav:   myapp.nav.main-stack
 
   decks:
-    myapp.d1:
+    myapp.home:
       name: Home
       cards:
-        myapp.d1.c1:
+        myapp.home.default:
           name: default
-        myapp.d1.c2:
+        myapp.home.loading:
           name: loading
 ```
 
 **Reference a specific thing when talking to your agent:**
 
-> "Change the guard on `myapp.d2.c1.t1` to also require `user.verified == true`"
+> "Change the guard on `myapp.settings.editing.tap-save` to also require `user.verified == true`"
 
-> "Add a `state_error` card to `myapp.d3` that shows inline validation messages"
+> "Add an `error` card to `myapp.profile` that shows inline validation messages"
 
-> "The transition from `myapp.d1.c1.t2` should be `sheet-up` not `push`"
+> "The transition from `myapp.home.default.tap-details` should be `sheet-up` not `push`"
 
 ---
 
 ## Status
 
-**v0.1 — initial specification.**
+**v0.3 — current specification.**
 
-The vocabulary is defined. The ID convention is stable. The five baskets
-are established. This is a working draft open for scrutiny and challenge.
+- ✅ Readable slug IDs (v0.2 breaking change from v0.1 numeric IDs)
+- ✅ 36 terms across 6 baskets
+- ✅ Extended element properties (input-type, scroll, columns, item-triggers)
+- ✅ Overlay targets for sheet transitions
+- ✅ Extended standard card vocabulary
+- ✅ Runtime form state vocabulary
+- ✅ Template pattern for DRY repeated structures
+
+**Version history:**
+- **v0.1** — Initial specification with numeric IDs (deprecated)
+- **v0.2** — Breaking change to readable slug IDs
+- **v0.3** — Non-breaking extensions + BASKET_6 Templates
 
 What is explicitly not done yet:
 - Formal schema / JSON Schema validation
@@ -276,4 +297,4 @@ MIT. The vocabulary belongs to everyone who needs to describe software.
 
 ---
 
-*MADL v0.1 · This document is the source of truth. Screenshots are not.*
+*MADL v0.3 · This document is the source of truth. Screenshots are not.*

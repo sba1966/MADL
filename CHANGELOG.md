@@ -4,7 +4,90 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [Unreleased — 0.2.0]
+## [Unreleased — 0.3.0]
+
+All changes from v0.2 to v0.3 are non-breaking clarifications and extensions.
+No existing valid v0.2 spec becomes invalid under v0.3.
+
+### Added
+- **input-type property for field elements** (issue #4)
+  Added optional `input-type` property to field declaration schema with closed
+  enumeration: `text | number | decimal | email | phone | date | url`.
+  Defaults to `text`. Specifies the keyboard type presented to the user when
+  the field is focused. This is a clarification, not a breaking change: no
+  existing valid MADL file becomes invalid.
+  Affects: Element declaration schema, Property requirement matrix, VALIDATION_CHECKLIST (CHECK_14).
+  Decided: 2026-04-10 via issue #4 sba1966/MADL.
+
+- **scroll property for list elements** (issue #5)
+  Added optional `scroll` property to list element schema with closed
+  enumeration: `vertical | horizontal | both`.
+  Defaults to `vertical`. Specifies the scroll direction for list elements.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Element declaration schema, Property requirement matrix, VALIDATION_CHECKLIST (CHECK_15).
+  Decided: 2026-04-10 via issue #5 sba1966/MADL.
+
+- **overlay_id support for sheet-up and sheet-down transition targets** (issue #7)
+  Extended action declaration schema `target` property to accept `overlay_id`
+  in addition to `card_id` and `deck_id`. This enables sheet-up and sheet-down
+  transitions to legally reference overlay elements as targets.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Action declaration schema, VALIDATION_CHECKLIST (CHECK_02, CHECK_16, CHECK_17).
+  Decided: 2026-04-10 via issue #7 sba1966/MADL.
+
+- **Standard card name vocabulary extended** (issue #8)
+  Added three new standard card names: `adding` (user creating new record),
+  `deleting` (delete operation in flight), and `confirming` (user presented
+  with destructive action requiring acknowledgement). Updated inference rules
+  to include mapping examples for all standard card names.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Standard card name vocabulary, Inference rule for card naming.
+  Decided: 2026-04-10 via issue #8 sba1966/MADL.
+
+- **Runtime form state vocabulary documented** (issue #10)
+  Added explicit runtime state vocabulary subsection to guard expression format.
+  Defined three closed runtime form state identifiers: `form.valid`, `form.dirty`,
+  and `form.pristine`. These were previously used in examples but not formally
+  documented as a closed enumeration.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Guard expression format (BASKET_3).
+  Decided: 2026-04-10 via issue #10 sba1966/MADL.
+
+- **columns property for list elements** (issue #6)
+  Added optional `columns` property to list element schema for tabular data.
+  Each column entry declares `field` (field name) and `label` (display label).
+  Column order is determined by sequence in the array. This addresses the need
+  to explicitly declare table structure for list elements displaying tabular data.
+  Affects: Element declaration schema, Property requirement matrix.
+  Decided: 2026-04-13 via issue #6 sba1966/MADL.
+
+- **item-triggers support for list elements** (issue #9)
+  Added optional `item-triggers` property to list element schema to support
+  triggers that fire from within specific elements inside list items. Each
+  item-trigger can specify gesture, element, action, and context passing using
+  `{list_id}.selected` pattern. Target cards can reference selected item fields
+  in guards or bound-to expressions. This enables distinction between "tap item
+  to select" and "tap button within item to perform action" scenarios.
+  Affects: Element declaration schema, Property requirement matrix, Binding resolution rules.
+  Decided: 2026-04-13 via issue #9 sba1966/MADL.
+
+- **Template pattern for repeated deck structures** (issue #11)
+  Added BASKET_6: TEMPLATES to support reusable structural patterns with variable
+  substitution. Templates use `$var` syntax for variables to avoid collision with
+  MADL ID notation `{type}`. Each template defines variations (sets of variable
+  values) and a structure block that is expanded before validation. Enables DRY
+  principle for applications with repeated deck/card structures that differ only
+  in content. Templates expand to full structural copies.
+  Affects: TAXONOMY (added BASKET_6), ID hierarchy, OUTPUT_FORMAT, META.
+  Decided: 2026-04-13 via issue #11 sba1966/MADL.
+
+---
+
+## [0.2.0] — 2026-04-10
 
 ### Breaking Changes
 - **ID format: readable slugs replace numeric shorthand** (issue #3)
@@ -20,10 +103,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   Affects: RULE_03, ID_HIERARCHY_COMPLETE_REFERENCE, all ID pattern tables,
   EXAMPLE_END_TO_END in agent instructions; reference booklet; cheatsheet.
   Decided: 2026-04-07 via issue #3 sba1966/MADL.
-
-### Pending
-- v0.2 versions of all primary spec documents to be authored
-- GitHub milestone v0.2 to be opened to track breaking changes
 
 ---
 

@@ -1,8 +1,25 @@
-# MADL_AGENT_INSTRUCTIONS_v0.2
+# MADL_AGENT_INSTRUCTIONS_v0.3
 
-## WHAT CHANGED FROM v0.1
+## WHAT CHANGED FROM v0.2
 
-Single breaking change. All other rules carry forward unchanged.
+All changes from v0.2 to v0.3 are non-breaking clarifications and extensions,
+except for BASKET_6 (Templates) which is a new structural feature.
+
+```
+Added in v0.3:
+- input-type property for field elements
+- scroll property for list elements
+- overlay_id support for sheet-up/sheet-down transition targets
+- Extended standard card name vocabulary (adding, deleting, confirming)
+- Runtime form state vocabulary documented
+- columns property for list elements
+- item-triggers support for list elements
+- BASKET_6: Templates for repeated deck structures
+```
+
+## WHAT CHANGED FROM v0.1 (v0.2 breaking change)
+
+Single breaking change from v0.1 to v0.2. All other rules carry forward unchanged.
 
 ```
 RULE_03  v0.1: IDs are lowercase, alphanumeric segments separated by dots.
@@ -53,7 +70,7 @@ RULE_10  If an ID does not exist in the MADL spec, the thing it refers to does n
 
 ## TAXONOMY
 
-MADL has exactly five baskets. Every concept belongs to exactly one basket.
+MADL has exactly six baskets. Every concept belongs to exactly one basket.
 
 ```
 BASKET_1  STRUCTURE    — what exists and how it is addressed
@@ -61,6 +78,7 @@ BASKET_2  NAVIGATION   — how the user moves between structure nodes
 BASKET_3  INTERACTION  — what the user does and what happens as a result
 BASKET_4  ELEMENTS     — what populates the structure
 BASKET_5  SERVICES     — what the application communicates with externally
+BASKET_6  TEMPLATES    — reusable patterns for repeated structures
 ```
 
 ---
@@ -128,17 +146,27 @@ empty      No data to display. First-use or post-clear state.
 loading    Async operation in progress. Data not yet available.
 loaded     Data present and rendered. Primary content state.
 error      A failure occurred. Network, validation, or server.
+adding     User is filling in a form to create a new record.
 editing    User is actively modifying existing data.
 saving     Write operation in flight. Awaiting confirmation.
+deleting   Delete operation in flight. Awaiting confirmation or completion.
+confirming User presented with a destructive or irreversible action requiring explicit acknowledgement.
 success    Operation completed successfully.
 ```
 
 ### Inference rule for card naming
 
-When reading a spec, if a card is described as "the screen where the user fills
-in the form", map it to `editing`. If described as "the screen after successful
-save", map it to `success`. Apply the standard name vocabulary before creating
-custom names.
+When reading a spec, apply the standard name vocabulary before creating custom names:
+- "user creates a new record" → `adding`
+- "user fills in the form" (existing record) → `editing`
+- "user confirms deletion" → `confirming`
+- "delete in progress" → `deleting`
+- "save in progress" → `saving`
+- "after successful save" → `success`
+- "no data available" → `empty`
+- "data loading" → `loading`
+- "data displayed" → `loaded`
+- "operation failed" → `error`
 
 ---
 
@@ -261,7 +289,7 @@ none            Instant switch. No animation.
   element:  {element_id}          # optional — binds trigger to specific element
   action:
     type:   {transition_type}
-    target: {card_id | deck_id}
+    target: {card_id | deck_id | overlay_id}
     guard:  {condition}           # optional boolean expression
     animation: {transition_type}  # optional override
 ```
@@ -282,6 +310,19 @@ Examples:
   form.valid == true
   user.authenticated == true && session.active == true
   input.length > 0
+```
+
+### Runtime state vocabulary
+
+These runtime form state identifiers are supported in guard expressions.
+This is a closed enumeration — additional identifiers outside this set
+are not permitted.
+
+```
+IDENTIFIER      DEFINITION
+form.valid      true if all required fields pass validation
+form.dirty      true if any field value differs from its bound-to value
+form.pristine   true if no field values have changed (opposite of form.dirty)
 ```
 
 ---
@@ -346,6 +387,19 @@ action-sheet   List of options sliding up. Contextual choices.
   modal:       true | false             # overlays only
   auto-dismiss: {integer}               # toast only — seconds
   placeholder: {string}                # field only
+  input-type:  text | number | decimal | email | phone | date | url  # field only
+  scroll:      vertical | horizontal | both  # list only — default: vertical
+  columns:                              # list only — optional tabular structure
+    - field: {field_name}
+      label: {display_label}
+  item-triggers:                        # list only — triggers within list items
+    {trigger_name}:
+      gesture: {gesture_value}
+      element: {element_within_item}    # optional — element within item template
+      action:
+        type: {transition_type}
+        target: {card_id | deck_id | overlay_id}
+        context: {list_id}.selected     # passes selected item to target
 ```
 
 ### Property requirement matrix
@@ -359,6 +413,10 @@ visible-if     OPT     OPT     OPT       OPT     OPT    OPT
 modal          -       -       -         -       -      MUST
 auto-dismiss   -       -       -         -       -      toast only
 placeholder    OPT     -       -         -       -      -
+input-type     OPT     -       -         -       -      -
+scroll         -       -       -         -       OPT    -
+columns        -       -       -         -       OPT    -
+item-triggers  -       -       -         -       OPT    -
 ```
 
 ### Binding resolution rules
@@ -375,6 +433,27 @@ bound-to: {app}.svc.{name}.ep.{name}
 
 A `list` element's `bound-to` resolves to a collection endpoint or store table.
 Each list item inherits the element schema of its parent list.
+
+### List item triggers and context passing
+
+When an `item-trigger` fires, the selected item context is passed to the target
+card using the `context` property. The context reference follows this pattern:
+
+```
+context: {list_id}.selected
+```
+
+The target card can reference the selected item in guards or bound-to expressions:
+
+```yaml
+# In guard expression
+guard: {list_id}.selected.id != null
+
+# In bound-to binding
+bound-to: {list_id}.selected.id
+```
+
+This allows the target card to access fields from the selected list item.
 
 ---
 
@@ -444,6 +523,83 @@ bluetooth
 
 ---
 
+## BASKET_6: TEMPLATES
+
+### Node types
+
+```
+TERM        DEFINITION
+template    Reusable structural pattern with variable substitution.
+variation   A set of variable values to be substituted into a template.
+```
+
+### Template declaration schema
+
+Templates use `$var` syntax for variable substitution to avoid collision
+with MADL ID pattern notation `{type}`.
+
+```yaml
+{app}.templates.{template_name}:
+  variations:
+    - id: {unique_id}
+      vars:
+        var_name: {value}
+        ...
+  structure:
+    {app}.$id:
+      name: $var_name
+      cards:
+        {app}.$id.default:
+          ...
+```
+
+### Template expansion rules
+
+```
+RULE_T1  Templates are expanded before validation. The validator sees only the expanded output.
+RULE_T2  Variables use $var syntax. Valid anywhere a value appears in the template.
+RULE_T3  The id variable is mandatory and must be unique among siblings.
+RULE_T4  All variables declared in the first variation entry must be present in all entries.
+RULE_T5  Templates can generate decks, cards, or slots. Elements cannot be templated.
+RULE_T6  Each variation produces exactly one complete structural copy.
+```
+
+### Example template usage
+
+```yaml
+tracker.templates.history-decks:
+  variations:
+    - id: history-1
+      vars:
+        ordinal: Latest
+    - id: history-2
+      vars:
+        ordinal: 2nd
+    - id: history-3
+      vars:
+        ordinal: 3rd
+  structure:
+    tracker.$id:
+      name: History — $ordinal
+      cards:
+        tracker.$id.loaded:
+          name: loaded
+          slots:
+            tracker.$id.loaded.content:
+              elements:
+                tracker.$id.loaded.content.entry-label:
+                  type: label
+                  bound-to: tracker.store.local.ep.history-$id
+        tracker.$id.empty:
+          name: empty
+```
+
+This expands to three complete deck declarations: tracker.history-1,
+tracker.history-2, tracker.history-3, each with its own card and element
+structure.
+
+---
+
 ## ID_HIERARCHY_COMPLETE_REFERENCE
 
 The full canonical ID tree in derivation order:
@@ -469,6 +625,7 @@ The full canonical ID tree in derivation order:
 {app}.store.{name}                           local store
 {app}.svc.{name}.ep.{name}                  endpoint
 {app}.svc.{name}.evt.{name}                 event
+{app}.templates.{name}                       template definition
 ```
 
 All segments in `{}` are readable slugs chosen by the spec author.
@@ -573,6 +730,15 @@ When producing MADL specifications, use this structure:
       events:
         {event_id}:
           trigger: {trigger_id}
+
+  templates:
+    {app}.templates.{template_name}:
+      variations:
+        - id: {variation_id}
+          vars:
+            {var_name}: {value}
+      structure:
+        {template_structure_using_$vars}
 ```
 
 ---
@@ -583,7 +749,7 @@ Before finalising any MADL output, verify:
 
 ```
 CHECK_01  Every deck has an entry card declared in atlas.
-CHECK_02  Every transition target exists as a declared deck or card ID.
+CHECK_02  Every transition target exists as a declared deck, card, or overlay ID.
 CHECK_03  Every bound-to reference resolves to a declared endpoint or store.
 CHECK_04  Every gesture value is in the closed gesture enumeration.
 CHECK_05  Every transition type is in the closed transition enumeration.
@@ -595,6 +761,10 @@ CHECK_10  No ID appears more than once in the specification.
 CHECK_11  No ID contains uppercase letters, spaces, or special characters except hyphens.
 CHECK_12  No ID segment is a number or a type-prefix plus integer (d1, c2, s3, e4 etc.).
 CHECK_13  All ID segments within a parent scope are unique readable slugs.
+CHECK_14  Every field with input-type declares a value from the closed input-type enumeration.
+CHECK_15  Every list with scroll declares a value from the closed scroll enumeration.
+CHECK_16  Every sheet-up transition target MUST reference a declared overlay of sub-type sheet.
+CHECK_17  Every sheet-down transition target MUST reference the declared sheet overlay being dismissed.
 ```
 
 ---
@@ -824,13 +994,16 @@ tracker:
 
 ```
 language:             MADL
-version:              0.2
+version:              0.3
 intended_reader:      AI coding agent
 human_readable:       true (by design — readable slug IDs)
 source_of_truth:      MADL spec always supersedes code and screenshots
 wml_terms_reused:     deck, card, entry, exit, action (from <do>), field (from <input>), label (from <p>)
-total_terms:          34
-closed_enumerations:  gesture_types, transition_types, overlay_subtypes, host_capabilities
-breaking_change:      RULE_03 — ID format. v0.1 numeric shorthand deprecated.
-decided:              2026-04-07 via issue #3 sba1966/MADL
+total_baskets:        6
+total_terms:          36 (added template, variation in v0.3)
+closed_enumerations:  gesture_types, transition_types, overlay_subtypes, host_capabilities,
+                      input_types, scroll_directions, form_state_identifiers
+breaking_change:      RULE_03 — ID format. v0.1 numeric shorthand deprecated (v0.2).
+                      BASKET_6 — Templates added (v0.3). No other breaking changes.
+decided:              2026-04-13 via issues #4-#11 sba1966/MADL
 ```
