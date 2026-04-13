@@ -261,7 +261,7 @@ none            Instant switch. No animation.
   element:  {element_id}          # optional — binds trigger to specific element
   action:
     type:   {transition_type}
-    target: {card_id | deck_id}
+    target: {card_id | deck_id | overlay_id}
     guard:  {condition}           # optional boolean expression
     animation: {transition_type}  # optional override
 ```
@@ -587,7 +587,7 @@ Before finalising any MADL output, verify:
 
 ```
 CHECK_01  Every deck has an entry card declared in atlas.
-CHECK_02  Every transition target exists as a declared deck or card ID.
+CHECK_02  Every transition target exists as a declared deck, card, or overlay ID.
 CHECK_03  Every bound-to reference resolves to a declared endpoint or store.
 CHECK_04  Every gesture value is in the closed gesture enumeration.
 CHECK_05  Every transition type is in the closed transition enumeration.
@@ -601,6 +601,8 @@ CHECK_12  No ID segment is a number or a type-prefix plus integer (d1, c2, s3, e
 CHECK_13  All ID segments within a parent scope are unique readable slugs.
 CHECK_14  Every field with input-type declares a value from the closed input-type enumeration.
 CHECK_15  Every list with scroll declares a value from the closed scroll enumeration.
+CHECK_16  Every sheet-up transition target MUST reference a declared overlay of sub-type sheet.
+CHECK_17  Every sheet-down transition target MUST reference the declared sheet overlay being dismissed.
 ```
 
 ---

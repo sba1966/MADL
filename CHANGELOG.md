@@ -40,6 +40,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   Affects: Element declaration schema, Property requirement matrix, VALIDATION_CHECKLIST (CHECK_15).
   Decided: 2026-04-10 via issue #5 sba1966/MADL.
 
+- **overlay_id support for sheet-up and sheet-down transition targets** (issue #7)
+  Extended action declaration schema `target` property to accept `overlay_id`
+  in addition to `card_id` and `deck_id`. This enables sheet-up and sheet-down
+  transitions to legally reference overlay elements as targets.
+  This is a clarification, not a breaking change: no existing valid MADL file
+  becomes invalid.
+  Affects: Action declaration schema, VALIDATION_CHECKLIST (CHECK_02, CHECK_16, CHECK_17).
+  Decided: 2026-04-10 via issue #7 sba1966/MADL.
+
 ### Pending
 - v0.2 versions of all primary spec documents to be authored
 - GitHub milestone v0.2 to be opened to track breaking changes
