@@ -2,8 +2,8 @@
 
 ## WHAT CHANGED FROM v0.2
 
-All changes from v0.2 to v0.3 are non-breaking clarifications and extensions.
-No existing valid v0.2 spec becomes invalid under v0.3.
+All changes from v0.2 to v0.3 are non-breaking clarifications and extensions,
+except for BASKET_6 (Templates) which is a new structural feature.
 
 ```
 Added in v0.3:
@@ -14,6 +14,7 @@ Added in v0.3:
 - Runtime form state vocabulary documented
 - columns property for list elements
 - item-triggers support for list elements
+- BASKET_6: Templates for repeated deck structures
 ```
 
 ## WHAT CHANGED FROM v0.1 (v0.2 breaking change)
@@ -69,7 +70,7 @@ RULE_10  If an ID does not exist in the MADL spec, the thing it refers to does n
 
 ## TAXONOMY
 
-MADL has exactly five baskets. Every concept belongs to exactly one basket.
+MADL has exactly six baskets. Every concept belongs to exactly one basket.
 
 ```
 BASKET_1  STRUCTURE    — what exists and how it is addressed
@@ -77,6 +78,7 @@ BASKET_2  NAVIGATION   — how the user moves between structure nodes
 BASKET_3  INTERACTION  — what the user does and what happens as a result
 BASKET_4  ELEMENTS     — what populates the structure
 BASKET_5  SERVICES     — what the application communicates with externally
+BASKET_6  TEMPLATES    — reusable patterns for repeated structures
 ```
 
 ---
@@ -521,6 +523,83 @@ bluetooth
 
 ---
 
+## BASKET_6: TEMPLATES
+
+### Node types
+
+```
+TERM        DEFINITION
+template    Reusable structural pattern with variable substitution.
+variation   A set of variable values to be substituted into a template.
+```
+
+### Template declaration schema
+
+Templates use `$var` syntax for variable substitution to avoid collision
+with MADL ID pattern notation `{type}`.
+
+```yaml
+{app}.templates.{template_name}:
+  variations:
+    - id: {unique_id}
+      vars:
+        var_name: {value}
+        ...
+  structure:
+    {app}.$id:
+      name: $var_name
+      cards:
+        {app}.$id.default:
+          ...
+```
+
+### Template expansion rules
+
+```
+RULE_T1  Templates are expanded before validation. The validator sees only the expanded output.
+RULE_T2  Variables use $var syntax. Valid anywhere a value appears in the template.
+RULE_T3  The id variable is mandatory and must be unique among siblings.
+RULE_T4  All variables declared in the first variation entry must be present in all entries.
+RULE_T5  Templates can generate decks, cards, or slots. Elements cannot be templated.
+RULE_T6  Each variation produces exactly one complete structural copy.
+```
+
+### Example template usage
+
+```yaml
+tracker.templates.history-decks:
+  variations:
+    - id: history-1
+      vars:
+        ordinal: Latest
+    - id: history-2
+      vars:
+        ordinal: 2nd
+    - id: history-3
+      vars:
+        ordinal: 3rd
+  structure:
+    tracker.$id:
+      name: History — $ordinal
+      cards:
+        tracker.$id.loaded:
+          name: loaded
+          slots:
+            tracker.$id.loaded.content:
+              elements:
+                tracker.$id.loaded.content.entry-label:
+                  type: label
+                  bound-to: tracker.store.local.ep.history-$id
+        tracker.$id.empty:
+          name: empty
+```
+
+This expands to three complete deck declarations: tracker.history-1,
+tracker.history-2, tracker.history-3, each with its own card and element
+structure.
+
+---
+
 ## ID_HIERARCHY_COMPLETE_REFERENCE
 
 The full canonical ID tree in derivation order:
@@ -546,6 +625,7 @@ The full canonical ID tree in derivation order:
 {app}.store.{name}                           local store
 {app}.svc.{name}.ep.{name}                  endpoint
 {app}.svc.{name}.evt.{name}                 event
+{app}.templates.{name}                       template definition
 ```
 
 All segments in `{}` are readable slugs chosen by the spec author.
@@ -650,6 +730,15 @@ When producing MADL specifications, use this structure:
       events:
         {event_id}:
           trigger: {trigger_id}
+
+  templates:
+    {app}.templates.{template_name}:
+      variations:
+        - id: {variation_id}
+          vars:
+            {var_name}: {value}
+      structure:
+        {template_structure_using_$vars}
 ```
 
 ---
@@ -910,10 +999,11 @@ intended_reader:      AI coding agent
 human_readable:       true (by design — readable slug IDs)
 source_of_truth:      MADL spec always supersedes code and screenshots
 wml_terms_reused:     deck, card, entry, exit, action (from <do>), field (from <input>), label (from <p>)
-total_terms:          34
+total_baskets:        6
+total_terms:          36 (added template, variation in v0.3)
 closed_enumerations:  gesture_types, transition_types, overlay_subtypes, host_capabilities,
                       input_types, scroll_directions, form_state_identifiers
 breaking_change:      RULE_03 — ID format. v0.1 numeric shorthand deprecated (v0.2).
-                      No breaking changes in v0.3.
-decided:              2026-04-13 via issues #4-#10 sba1966/MADL
+                      BASKET_6 — Templates added (v0.3). No other breaking changes.
+decided:              2026-04-13 via issues #4-#11 sba1966/MADL
 ```

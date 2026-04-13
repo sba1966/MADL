@@ -75,6 +75,16 @@ No existing valid v0.2 spec becomes invalid under v0.3.
   Affects: Element declaration schema, Property requirement matrix, Binding resolution rules.
   Decided: 2026-04-13 via issue #9 sba1966/MADL.
 
+- **Template pattern for repeated deck structures** (issue #11)
+  Added BASKET_6: TEMPLATES to support reusable structural patterns with variable
+  substitution. Templates use `$var` syntax for variables to avoid collision with
+  MADL ID notation `{type}`. Each template defines variations (sets of variable
+  values) and a structure block that is expanded before validation. Enables DRY
+  principle for applications with repeated deck/card structures that differ only
+  in content. Templates expand to full structural copies.
+  Affects: TAXONOMY (added BASKET_6), ID hierarchy, OUTPUT_FORMAT, META.
+  Decided: 2026-04-13 via issue #11 sba1966/MADL.
+
 ---
 
 ## [0.2.0] — 2026-04-10
